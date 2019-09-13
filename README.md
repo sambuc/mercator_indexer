@@ -47,7 +47,7 @@ For 3 datasets, `setA`, `setB`, `setC`, the following files are expected to be i
 Run (and build if necessary) the indexer:
 
 ```sh
-MERCATOR_DATASETS="setA, setB, setC" cargo run --release
+cargo run --release -- setA, setB, setC
 ```
 
 This will produce the following files:
