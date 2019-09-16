@@ -24,7 +24,8 @@ structopt = "^0.3"
 mercator_db = "^0.1"
 
 # Logging macros API
-log = { version = "^0.4", features = ["max_level_trace", "release_max_level_info"] }
+#log = { version = "^0.4", features = ["max_level_trace", "release_max_level_info"] }
+log = { version = "^0.4", features = ["max_level_trace", "release_max_level_trace"] }
 pretty_env_logger = "^0.3" # Logger implementation
 
 [workspace]
