@@ -47,7 +47,7 @@ For 3 datasets, `setA`, `setB`, `setC`, the following files are expected to be i
 Run (and build if necessary) the indexer:
 
 ```sh
-cargo run --release -- setA, setB, setC
+cargo run --release -- setA setB setC
 ```
 
 This will produce the following files:
@@ -63,6 +63,14 @@ This will produce the following files:
    - setC.objects.bin
    - setC.spaces.bin
    - setC.index
+   
+By default, each dataset will have a version set to the empty string, if you want to specify the dataset version you can like this:
+
+```sh
+cargo run --release -- setA:v0.1 setB setC:MyAwesomeVersion
+```
+
+With the above, `setA` will have its version set to `v0.1`, `setB` to the empty string and `setC` to `MyAwesomeVersion`. 
 
 ## Acknowledgements
 

@@ -1,8 +1,6 @@
 #[macro_use]
 extern crate measure_time;
 
-use std::process::exit;
-
 use mercator_db::json::storage;
 use structopt::StructOpt;
 
@@ -23,19 +21,29 @@ fn main() {
 
     for dataset in opt.datasets {
         println!();
-        warn!("Indexing dataset: {}", dataset);
-        warn_time!("Indexed dataset: {}", dataset);
+
+        let v = dataset.split(':').collect::<Vec<_>>();
+        if v.len() > 2 {
+            warn!("Invalid dataset definition, too many fields: '{:?}'", v);
+            continue;
+        }
+
+        let title = v[0];
+        let version = if v.len() == 2 { v[1] } else { "" };
+
+        warn!("Indexing dataset: {}", title);
+        warn_time!("Indexed dataset: {}", title);
 
         // Convert to binary the JSON data:
         {
             info_time!("Converting to binary JSON data");
-            storage::convert(&dataset);
+            storage::convert(&title);
         }
 
         // Build a Database Index:
         {
             info_time!("Building database index");
-            storage::build(&dataset);
+            storage::build(&title, version);
         }
     }
 }
