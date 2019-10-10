@@ -6,7 +6,9 @@ use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
-    /// List of datasets to index.
+    /// List of datasets to index, with the following syntax per dataset:
+    /// name[:version]: where name is the basename of the input files, and
+    /// `version` a string to add to the dataset description
     datasets: Vec<String>,
 }
 
