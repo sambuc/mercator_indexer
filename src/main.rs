@@ -5,7 +5,18 @@ use mercator_db::json::storage;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
+#[structopt(rename_all = "kebab-case")]
 struct Opt {
+    /// Optional list of scale factors to be applied to generate coarser indices
+    /// as well as the full-resolution index.
+    #[structopt(long, short)]
+    scales: Option<Vec<u32>>,
+
+    /// Optional hint to be used when you wish to generate extra, coarser
+    /// indices. This argument is ignored when `scales` is also provided.
+    #[structopt(long, short)]
+    max_elements: Option<Option<usize>>,
+
     /// List of datasets to index, with the following syntax per dataset:
     /// name[:version]: where name is the basename of the input files, and
     /// `version` a string to add to the dataset description
@@ -20,6 +31,25 @@ fn main() {
     pretty_env_logger::init();
 
     let opt = Opt::from_args();
+    let scales = match opt.scales {
+        None => None,
+        Some(v) => {
+            if v.is_empty() {
+                None
+            } else {
+                let v = v.iter().map(|x| vec![*x, *x, *x]).collect();
+                Some(v)
+            }
+        }
+    };
+
+    let max_elements = match opt.max_elements {
+        None => None,
+        Some(e) => match e {
+            None => Some(0),
+            s @ Some(_) => s,
+        },
+    };
 
     for dataset in opt.datasets {
         println!();
@@ -45,7 +75,7 @@ fn main() {
         // Build a Database Index:
         {
             info_time!("Building database index");
-            storage::build(&title, version);
+            storage::build(&title, version, scales.clone(), max_elements);
         }
     }
 }

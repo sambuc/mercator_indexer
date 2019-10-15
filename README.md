@@ -64,6 +64,7 @@ This will produce the following files:
    - setC.spaces.bin
    - setC.index
    
+
 By default, each dataset will have a version set to the empty string, if you want to specify the dataset version you can like this:
 
 ```sh
@@ -71,6 +72,14 @@ cargo run --release -- setA:v0.1 setB setC:MyAwesomeVersion
 ```
 
 With the above, `setA` will have its version set to `v0.1`, `setB` to the empty string and `setC` to `MyAwesomeVersion`. 
+
+For more options, please refer to the online help:
+
+```sh
+cargo run --release -- --help
+```
+
+
 
 ## Acknowledgements
 
