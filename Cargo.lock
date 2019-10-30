@@ -125,7 +125,6 @@ name = "ironsea_index_hashmap"
 version = "0.1.0"
 dependencies = [
  "ironsea_index 0.1.0",
- "ironsea_table 0.1.0",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -138,7 +137,6 @@ dependencies = [
  "bincode 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ironsea_index 0.1.0",
  "ironsea_store 0.1.0",
- "ironsea_table 0.1.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
