@@ -3,8 +3,11 @@
 .DS_Store
 .*
 *~
-1*k.*
 test*
 test*
+*.index
+*.bin
+*.json
+*.xyz
 
 !.gitignore

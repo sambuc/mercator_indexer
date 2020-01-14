@@ -1,7 +1,10 @@
 #[macro_use]
 extern crate measure_time;
 
-use mercator_db::json::storage;
+use std::io::Error;
+
+use mercator_db::storage;
+use mercator_db::storage::model;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -14,13 +17,53 @@ struct Opt {
 
     /// Optional hint to be used when you wish to generate extra, coarser
     /// indices. This argument is ignored when `scales` is also provided.
+    #[allow(clippy::option_option)]
     #[structopt(long, short)]
     max_elements: Option<Option<usize>>,
+
+    /// Storage format of the input data. Either `xyz` or `json`.
+    #[structopt(long, short)]
+    format: String,
 
     /// List of datasets to index, with the following syntax per dataset:
     /// name[:version]: where name is the basename of the input files, and
     /// `version` a string to add to the dataset description
     datasets: Vec<String>,
+}
+
+enum StorageFormat {
+    Json,
+    XYZ,
+}
+
+impl StorageFormat {
+    pub fn convert(&self, title: &str) -> Result<(), Error> {
+        match self {
+            StorageFormat::Json => {
+                storage::json::from::<Vec<model::Space>>(&format!("{}.spaces", title))?;
+                storage::json::from::<Vec<model::v1::SpatialObject>>(&format!(
+                    "{}.objects",
+                    title
+                ))?;
+            }
+            StorageFormat::XYZ => {
+                storage::json::from::<Vec<model::Space>>(&format!("{}.spaces", title))?;
+                storage::xyz::from(&format!("{}.objects", title))?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl From<&str> for StorageFormat {
+    fn from(name: &str) -> Self {
+        match name {
+            "json" => StorageFormat::Json,
+            "xyz" => StorageFormat::XYZ,
+            _ => panic!("Unknown input format: {}", name),
+        }
+    }
 }
 
 fn main() {
@@ -31,6 +74,9 @@ fn main() {
     pretty_env_logger::init();
 
     let opt = Opt::from_args();
+
+    let format = StorageFormat::from(opt.format.as_str());
+
     let scales = match opt.scales {
         None => None,
         Some(v) => {
@@ -68,14 +114,26 @@ fn main() {
 
         // Convert to binary the JSON data:
         {
-            info_time!("Converting to binary JSON data");
-            storage::convert(&title);
+            info_time!("Converting to binary data");
+            match format.convert(title) {
+                Err(e) => {
+                    warn!("Error converting input files: {:?}, skipping.", e);
+                    continue;
+                }
+                Ok(()) => (),
+            }
         }
 
         // Build a Database Index:
         {
             info_time!("Building database index");
-            storage::build(&title, version, scales.clone(), max_elements);
+            match storage::bincode::build(&title, version, scales.clone(), max_elements) {
+                Err(e) => {
+                    warn!("Error building index: {:?}, skipping.", e);
+                    continue;
+                }
+                Ok(()) => (),
+            }
         }
     }
 }
