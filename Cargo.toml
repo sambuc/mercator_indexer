@@ -18,6 +18,9 @@ license = "MIT"
 
 include = ["Cargo.toml", "README.md", "LICENSE", "ACKNOWLEDGEMENTS", "src/**/*.rs"]
 
+[profile.release]
+lto = true
+
 [dependencies]
 measure_time = "^0.6"
 structopt = "^0.3"
