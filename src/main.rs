@@ -47,9 +47,14 @@ struct Opt {
 
     /// List of datasets to index
     ///
+    /// The data files are expected to be found in the current directory.
+    ///
     /// Syntax per dataset:
-    /// name[:version]: where name is the basename of the input files, and
-    /// `version` a string to add to the dataset description
+    ///
+    ///      name[:version]
+    ///
+    /// where `name` is the basename of the input files, and `version` a
+    /// string to add to the dataset description.
     datasets: Vec<String>,
 }
 

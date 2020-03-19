@@ -22,13 +22,14 @@ This enables the index implementations to be agnostic from the underlying data s
 
  * Rust: https://www.rust-lang.org
 
-## Quick start
-
 Checkout the dependencies in the parent folder:
- * mercator_db
- * ironsea_index
- * ironsea_index_hashmap
- * ironsea_index_sfc_dbc
+
+ * mercator_db – https://github.com/epfl-dias/mercator_db
+ * ironsea_index – https://github.com/epfl-dias/ironsea_index
+ * ironsea_index_hashmap – https://github.com/epfl-dias/ironsea_index_hashmap
+ * ironsea_index_sfc_dbc – https://github.com/epfl-dias/ironsea_index_sfc_dbc
+
+## Quick start
 
 For 3 datasets, `setA`, `setB`, `setC`, the following files are expected to be in the current folder:
  * setA:
@@ -73,6 +74,21 @@ For more options, please refer to the online help:
 
 ```sh
 cargo run --release -- --help
+```
+
+## Installation
+
+To install the software on the system, after checking out the
+dependencies you can use:
+
+```sh
+cargo install --path .
+```
+
+Then in any folder you can then use:
+
+```sh
+mercator_indexer -f json setA:v0.1 setB setC:MyAwesomeVersion
 ```
 
 ## Acknowledgements
