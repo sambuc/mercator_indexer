@@ -1,6 +1,6 @@
 # Mercator Indexer
 
-Tool to generate indexes for the Mercator Spatial Index service.
+Tool to generate indices for the Mercator, a spatial index.
 
 ## Mercator: Spatial Index
 
@@ -27,11 +27,8 @@ This enables the index implementations to be agnostic from the underlying data s
 Checkout the dependencies in the parent folder:
  * mercator_db
  * ironsea_index
- * ironsea_store
- * ironsea_table
  * ironsea_index_hashmap
  * ironsea_index_sfc_dbc
- * ironsea_table_vector
 
 For 3 datasets, `setA`, `setB`, `setC`, the following files are expected to be in the current folder:
  * setA:

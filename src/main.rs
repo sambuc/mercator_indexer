@@ -9,16 +9,34 @@ use mercator_db::storage;
 use mercator_db::storage::model;
 use structopt::StructOpt;
 
+/// Tool to generate indices for the Mercator, a spatial index.
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "kebab-case")]
 struct Opt {
-    /// Optional list of scale factors to be applied to generate coarser indices
-    /// as well as the full-resolution index.
+    /// List of scale factors.
+    ///
+    /// This is applied to generate coarser indices on top of the
+    /// full-resolution index.
+    ///
+    /// The factors are power of 2, which defines the number of bits to
+    /// mask in order to reduce the precision of the volumetric
+    /// positions within an index.
     #[structopt(long, short)]
     scales: Option<Vec<u32>>,
 
-    /// Optional hint to be used when you wish to generate extra, coarser
-    /// indices. This argument is ignored when `scales` is also provided.
+    /// Threshold to stop generating extra, coarser indices.
+    ///
+    /// This threshold defines the minimum number of elements contained
+    /// in the index. Indices will be build for all the precision
+    /// reductions which half the number of data point in the index,
+    /// compared to the previous one, until we reached this threshold,
+    /// or the number of data point equals the number of distinct IDs
+    /// registered in the index.
+    ///
+    /// Without a value, the limit will be the number od distinct IDs in
+    /// the index.
+    ///
+    /// This argument is ignored when `scales` is also provided.
     #[allow(clippy::option_option)]
     #[structopt(long, short)]
     max_elements: Option<Option<usize>>,
@@ -27,7 +45,9 @@ struct Opt {
     #[structopt(long, short)]
     format: String,
 
-    /// List of datasets to index, with the following syntax per dataset:
+    /// List of datasets to index
+    ///
+    /// Syntax per dataset:
     /// name[:version]: where name is the basename of the input files, and
     /// `version` a string to add to the dataset description
     datasets: Vec<String>,
