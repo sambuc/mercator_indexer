@@ -9,7 +9,7 @@ use mercator_db::storage;
 use mercator_db::storage::model;
 use structopt::StructOpt;
 
-/// Tool to generate indices for the Mercator, a spatial index.
+/// Tool to generate indices for Mercator, a spatial index.
 #[derive(StructOpt, Debug)]
 #[structopt(rename_all = "kebab-case")]
 struct Opt {
