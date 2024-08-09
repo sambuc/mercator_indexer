@@ -5,12 +5,12 @@ extern crate measure_time;
 
 use std::io::Error;
 
+use clap::Parser;
 use mercator_db::storage;
 use mercator_db::storage::model;
-use structopt::StructOpt;
 
 /// Tool to generate indices for Mercator, a spatial index.
-#[derive(StructOpt, Debug)]
+#[derive(Parser, Debug)]
 #[structopt(rename_all = "kebab-case")]
 struct Opt {
     /// List of scale factors.
@@ -21,7 +21,7 @@ struct Opt {
     /// The factors are power of 2, which defines the number of bits to
     /// mask in order to reduce the precision of the volumetric
     /// positions within an index.
-    #[structopt(long, short)]
+    #[arg(short, long)]
     scales: Option<Vec<u32>>,
 
     /// Threshold to stop generating extra, coarser indices.
@@ -38,11 +38,11 @@ struct Opt {
     ///
     /// This argument is ignored when `scales` is also provided.
     #[allow(clippy::option_option)]
-    #[structopt(long, short)]
+    #[arg(short, long)]
     max_elements: Option<Option<usize>>,
 
     /// Storage format of the input data. Either `xyz` or `json`.
-    #[structopt(long, short)]
+    #[arg(short, long)]
     format: String,
 
     /// List of datasets to index
@@ -60,7 +60,7 @@ struct Opt {
 
 enum StorageFormat {
     Json,
-    XYZ,
+    Xyz,
 }
 
 impl StorageFormat {
@@ -73,7 +73,7 @@ impl StorageFormat {
                     title
                 ))?;
             }
-            StorageFormat::XYZ => {
+            StorageFormat::Xyz => {
                 storage::json::from::<Vec<model::Space>>(&format!("{}.spaces", title))?;
                 storage::xyz::from(&format!("{}.objects", title))?;
             }
@@ -87,7 +87,7 @@ impl From<&str> for StorageFormat {
     fn from(name: &str) -> Self {
         match name {
             "json" => StorageFormat::Json,
-            "xyz" => StorageFormat::XYZ,
+            "xyz" => StorageFormat::Xyz,
             _ => panic!("Unknown input format: {}", name),
         }
     }
@@ -100,7 +100,7 @@ fn main() {
     }
     pretty_env_logger::init();
 
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     let format = StorageFormat::from(opt.format.as_str());
 
@@ -142,24 +142,18 @@ fn main() {
         // Convert to binary the JSON data:
         {
             info_time!("Converting to binary data");
-            match format.convert(title) {
-                Err(e) => {
-                    warn!("Error converting input files: {:?}, skipping.", e);
-                    continue;
-                }
-                Ok(()) => (),
+            if let Err(e) = format.convert(title) {
+                warn!("Error converting input files: {:?}, skipping.", e);
+                continue;
             }
         }
 
         // Build a Database Index:
         {
             info_time!("Building database index");
-            match storage::bincode::build(&title, version, scales.clone(), max_elements) {
-                Err(e) => {
-                    warn!("Error building index: {:?}, skipping.", e);
-                    continue;
-                }
-                Ok(()) => (),
+            if let Err(e) = storage::bincode::build(title, version, scales.clone(), max_elements) {
+                warn!("Error building index: {:?}, skipping.", e);
+                continue;
             }
         }
     }
